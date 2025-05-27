@@ -4,7 +4,10 @@
 
 
 
-set_up_dataset <- function() {
+set_up_dataset <- function(rem_outliers = FALSE) {
+  
+  # check rem_outliers
+  if (!is.logical(rem_outliers)) stop("rem_outliers needs to be TRUE or FALSE")
   
   # load libraries
   require(tidyverse)
@@ -217,6 +220,11 @@ set_up_dataset <- function() {
   
   clean_dataset <- data_long_cc
   
+  # create response variable
+  clean_dataset <- clean_dataset %>%
+    mutate(resphba1c = posthba1cfinal - prehba1c)
+  
+  #:------------
   # find Omics information
 
   # find names of columns with omics
@@ -250,19 +258,27 @@ set_up_dataset <- function() {
     select(contains(c("study_id", "_mean"))) %>%
     rename_with(~ str_remove(.x, "_mean"))
   
+  # remove columns with full missingness
+  omics_dataset <- omics_dataset %>%
+    select(where(~ !all(is.na(.))))
   
-  ## Potential cleaning step: removing outliers (https://pmc.ncbi.nlm.nih.gov/articles/PMC11405273/)
   
-  ## need to stardadise
-  omics_dataset_outliers <- omics_dataset %>%
-    mutate(across(contains("proteomics_"), ~ ifelse(abs(. - mean(., na.rm = TRUE)) > 5 * sd(., na.rm = TRUE), NA, .)))
+  if (isTRUE(rem_outliers)) {
+      
+    ## Potential cleaning step: removing outliers (https://pmc.ncbi.nlm.nih.gov/articles/PMC11405273/)
+    
+    ## need to stardadise
+    omics_dataset <- omics_dataset %>%
+      mutate(across(contains("proteomics_"), ~ ifelse(abs(. - mean(., na.rm = TRUE)) > 5 * sd(., na.rm = TRUE), NA, .)))
+    
   
+  }
   
   
   # join with main dataset
   clean_dataset_2 <- clean_dataset %>%
     left_join(
-      omics_dataset_outliers, by = c("study_id")
+      omics_dataset, by = c("study_id")
     )
   
   #:----------------------------------
