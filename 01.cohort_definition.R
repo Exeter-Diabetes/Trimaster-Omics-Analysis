@@ -1,21 +1,24 @@
-#:--------------------------------
+# # # # # # # # # # # # # # # # # # # 
 # Function for loading initial dataset
-#
+# # # # # # # # # # # # # # # # # # # 
 
-
-
-set_up_dataset <- function(rem_outliers = FALSE) {
+set_up_dataset <- function(rem_outliers = FALSE, differential = FALSE) {
+  
+  # Check inputs ----
   
   # check rem_outliers
   if (!is.logical(rem_outliers)) stop("rem_outliers needs to be TRUE or FALSE")
+  # check differential
+  if (!is.logical(differential)) stop("differential needs to be TRUE or FALSE")
   
   # load libraries
   require(tidyverse)
   require(readr)
   require(data.table)
   
-  #:-----------------------------------
-  #: Below is Laura's code taken from LauraAnalysis\analysis_cluster\study_codes\00_main_analysis_clustervsmodel
+  
+  # Laura's code ----
+  # LauraAnalysis\analysis_cluster\study_codes\00_main_analysis_clustervsmodel
   
   
   smoke_data_merge_orig <- read_csv("../../ALLAnalysisReadyData/TM_AnalaysiscombinedData.csv")
@@ -34,7 +37,7 @@ set_up_dataset <- function(rem_outliers = FALSE) {
   
   
   #
-  ## Load in genetic cluster data and merge --------------------------------------
+  ## Load in genetic cluster data and merge
   #
   
   load("../../LauraAnalysis/analysis_cluster/study_data_output//genetic_cluser_dataRdata") # genetic_cluser_data
@@ -48,9 +51,7 @@ set_up_dataset <- function(rem_outliers = FALSE) {
   rm(genetic_cluser_data)
   
   
-  #--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
-  # Data preparation -------------------------------------------------------------
-  #--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+  # Data preparation
   
   # Exclude participants from the 1_SAID cluster in the analysis
   data_clusterexcluded <- data[!data$clusterID_name == "1_SAID", ]
@@ -214,9 +215,9 @@ set_up_dataset <- function(rem_outliers = FALSE) {
   # names(data_long_cc)[contains_any_na]
 
   
-  #:-----------------------------------
-  #: Above is Laura's code taken from LauraAnalysis\analysis_cluster\study_codes\00_main_analysis_clustervsmodel
-  #:-----------------------------------
+  # Above is Laura's code taken from LauraAnalysis\analysis_cluster\study_codes\00_main_analysis_clustervsmodel
+  
+  # Create response variables ----
   
   clean_dataset <- data_long_cc
   
@@ -224,8 +225,7 @@ set_up_dataset <- function(rem_outliers = FALSE) {
   clean_dataset <- clean_dataset %>%
     mutate(resphba1c = posthba1cfinal - prehba1c)
   
-  #:------------
-  # find Omics information
+  # Omics information ----
 
   # find names of columns with omics
   require(readxl)
@@ -274,18 +274,39 @@ set_up_dataset <- function(rem_outliers = FALSE) {
   
   }
   
-  
   # join with main dataset
-  clean_dataset_2 <- clean_dataset %>%
+  dataset_row_drug_initiation <- clean_dataset %>%
     left_join(
       omics_dataset, by = c("study_id")
     )
   
-  #:----------------------------------
+  ### ### ### ### ### ### ###
   
+  # Differential response ----
   
-  # return output
-  output_dataset <- clean_dataset_2
-  return(output_dataset)
+  # check if this has been passed (if not, then pass above)
+  if (!isTRUE(differential)) {
+    
+    # return output
+    output_dataset <- dataset_row_drug_initiation
+    return(output_dataset)
+    
+  } else {
+    
+    # pivot dataset wider
+    dataset_row_patient <- dataset_row_drug_initiation %>%
+      select(-c(hba1c_tx, tx_taken, period)) %>%
+      group_by(study_id) %>%
+      pivot_wider(
+        names_from = c("drugclass"),
+        values_from = c("posthba1cfinal", "resphba1c", "hba1cmonth")
+      ) %>%
+      ungroup()
+    
+    # return output
+    output_dataset <- dataset_row_patient
+    return(output_dataset)
+    
+  }
   
 }
