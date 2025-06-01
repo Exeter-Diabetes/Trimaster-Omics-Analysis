@@ -1,62 +1,8 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
-# In this file, we do a univariate analysis of proteomics versus drug response
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
-
-#Functions ----
-regression_analysis_function <- function(data, var_proteomics = NULL, drug, adj_vars = NULL) {
-  
-  # check if var_proteomics isn't null
-  if (is.null(var_proteomics)) stop("Supply var_proteomics.")
-  if (!all(var_proteomics %in% colnames(data))) stop("Not all var_proteomics in data")
-  # check drug is in the data
-  if (!all(c("drugclass") %in% colnames(data))) stop("drugclass needs to be present in the data")
-  if (!is.character(drug) | length(drug) > 1) stop("drug must be a character vector with one entry")
-  if (!(drug %in% unique(data$drugclass))) stop("drug not in drugclass")
-  # check whether adj_vars are in the data
-  if (!is.null(adj_vars)) if(!all(adj_vars %in% colnames(data))) stop("Not all adj_vars in data")
-  
-  # output file
-  interim_dataset <- NULL
-  
-  # iterate by each var_proteomics
-  for (protein in variables_proteomics) {
-    
-    # formula for iterations (adj_vars only added when not null because of paste)
-    formula <- paste("resphba1c ~ ", paste(c(protein, adj_vars), collapse = "+"))
-    
-    # model for iterations
-    model <- lm(formula = as.formula(formula), data = data %>% filter(drugclass == drug))
-    
-    # append new rows
-    interim_dataset <- rbind(
-      interim_dataset,
-      data.frame(
-        proteomic = protein,
-        coef = summary(model)$coefficients[protein,1],
-        p_value = summary(model)$coefficients[protein,4]
-      )
-    )
-    
-  }
-  
-  # multiple testing adjustment
-  interim_dataset <- interim_dataset %>%
-    mutate(
-      p_value_adj_bonf = p.adjust(interim_dataset$p_value, method = "bonferroni"),
-      p_value_adj_FDR = p.adjust(interim_dataset$p_value, method = "BH")
-    ) %>%
-    arrange(p_value)
-  
-  # output object
-  return(interim_dataset)
-  
-}
-
-
 
 # Initial setup ----
 
 # load functions
+source("00.functions.R")
 source("01.cohort_definition.R")
 
 # load data
@@ -72,17 +18,17 @@ variables_proteomics <- data %>% select(contains("proteom")) %>% colnames()
 
 ## DPP4
 DPP4_pvalues_univariate <- regression_analysis_function(
-  data = data, var_proteomics = variables_proteomics, drug = "DPP4"
+  data = data %>% filter(drugclass == "DPP4"), var_outcome = "resphba1c", var_proteomics = variables_proteomics
 )
 
 ## SGLT2
 SGLT2_pvalues_univariate <- regression_analysis_function(
-  data = data, var_proteomics = variables_proteomics, drug = "SGLT2"
+  data = data %>% filter(drugclass == "SGLT2"), var_outcome = "resphba1c", var_proteomics = variables_proteomics
 )
 
 ## TZD
 TZD_pvalues_univariate <- regression_analysis_function(
-  data = data, var_proteomics = variables_proteomics, drug = "TZD"
+  data = data %>% filter(drugclass == "TZD"), var_outcome = "resphba1c", var_proteomics = variables_proteomics
 )
 
 ## Adjusted analysis ----
@@ -91,17 +37,17 @@ TZD_pvalues_univariate <- regression_analysis_function(
 
 ## DPP4
 DPP4_pvalues_adj_hba1c <- regression_analysis_function(
-  data = data, var_proteomics = variables_proteomics, drug = "DPP4", adj_vars = "prehba1c"
+  data = data %>% filter(drugclass == "DPP4"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = "prehba1c"
 )
 
 ## SGLT2
 SGLT2_pvalues_adj_hba1c <- regression_analysis_function(
-  data = data, var_proteomics = variables_proteomics, drug = "SGLT2", adj_vars = "prehba1c"
+  data = data %>% filter(drugclass == "SGLT2"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = "prehba1c"
 )
 
 ## TZD
 TZD_pvalues_adj_hba1c <- regression_analysis_function(
-  data = data, var_proteomics = variables_proteomics, drug = "TZD", adj_vars = "prehba1c"
+  data = data %>% filter(drugclass == "TZD"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = "prehba1c"
 )
 
 
@@ -109,17 +55,17 @@ TZD_pvalues_adj_hba1c <- regression_analysis_function(
 
 ## DPP4
 DPP4_pvalues_adj_sex <- regression_analysis_function(
-  data = data, var_proteomics = variables_proteomics, drug = "DPP4", adj_vars = "sex"
+  data = data %>% filter(drugclass == "DPP4"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = "sex"
 )
 
 ## SGLT2
 SGLT2_pvalues_adj_sex <- regression_analysis_function(
-  data = data, var_proteomics = variables_proteomics, drug = "SGLT2", adj_vars = "sex"
+  data = data %>% filter(drugclass == "SGLT2"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = "sex"
 )
 
 ## TZD
 TZD_pvalues_adj_sex <- regression_analysis_function(
-  data = data, var_proteomics = variables_proteomics, drug = "TZD", adj_vars = "sex"
+  data = data %>% filter(drugclass == "TZD"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = "sex"
 )
 
 
@@ -127,17 +73,17 @@ TZD_pvalues_adj_sex <- regression_analysis_function(
 
 ## DPP4
 DPP4_pvalues_adj_bmi <- regression_analysis_function(
-  data = data, var_proteomics = variables_proteomics, drug = "DPP4", adj_vars = "prebmi"
+  data = data %>% filter(drugclass == "DPP4"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = "prebmi"
 )
 
 ## SGLT2
 SGLT2_pvalues_adj_bmi <- regression_analysis_function(
-  data = data, var_proteomics = variables_proteomics, drug = "SGLT2", adj_vars = "prebmi"
+  data = data %>% filter(drugclass == "SGLT2"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = "prebmi"
 )
 
 ## TZD
 TZD_pvalues_adj_bmi <- regression_analysis_function(
-  data = data, var_proteomics = variables_proteomics, drug = "TZD", adj_vars = "prebmi"
+  data = data %>% filter(drugclass == "TZD"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = "prebmi"
 )
 
 
@@ -145,17 +91,17 @@ TZD_pvalues_adj_bmi <- regression_analysis_function(
 
 ## DPP4
 DPP4_pvalues_adj_hba1c_bmi <- regression_analysis_function(
-  data = data, var_proteomics = variables_proteomics, drug = "DPP4", adj_vars = c("prehba1c", "prebmi")
+  data = data %>% filter(drugclass == "DPP4"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("prehba1c", "prebmi")
 )
 
 ## SGLT2
 SGLT2_pvalues_adj_hba1c_bmi <- regression_analysis_function(
-  data = data, var_proteomics = variables_proteomics, drug = "SGLT2", adj_vars = c("prehba1c", "prebmi")
+  data = data %>% filter(drugclass == "SGLT2"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("prehba1c", "prebmi")
 )
 
 ## TZD
 TZD_pvalues_adj_hba1c_bmi <- regression_analysis_function(
-  data = data, var_proteomics = variables_proteomics, drug = "TZD", adj_vars = c("prehba1c", "prebmi")
+  data = data %>% filter(drugclass == "TZD"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("prehba1c", "prebmi")
 )
 
 
@@ -164,17 +110,17 @@ TZD_pvalues_adj_hba1c_bmi <- regression_analysis_function(
 
 ## DPP4
 DPP4_pvalues_adj_hba1c_sex <- regression_analysis_function(
-  data = data, var_proteomics = variables_proteomics, drug = "DPP4", adj_vars = c("prehba1c", "sex")
+  data = data %>% filter(drugclass == "DPP4"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("prehba1c", "sex")
 )
 
 ## SGLT2
 SGLT2_pvalues_adj_hba1c_sex <- regression_analysis_function(
-  data = data, var_proteomics = variables_proteomics, drug = "SGLT2", adj_vars = c("prehba1c", "sex")
+  data = data %>% filter(drugclass == "SGLT2"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("prehba1c", "sex")
 )
 
 ## TZD
 TZD_pvalues_adj_hba1c_sex <- regression_analysis_function(
-  data = data, var_proteomics = variables_proteomics, drug = "TZD", adj_vars = c("prehba1c", "sex")
+  data = data %>% filter(drugclass == "TZD"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("prehba1c", "sex")
 )
 
 
@@ -182,17 +128,17 @@ TZD_pvalues_adj_hba1c_sex <- regression_analysis_function(
 
 ## DPP4
 DPP4_pvalues_adj_bmi_sex <- regression_analysis_function(
-  data = data, var_proteomics = variables_proteomics, drug = "DPP4", adj_vars = c("prebmi", "sex")
+  data = data %>% filter(drugclass == "DPP4"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("prebmi", "sex")
 )
 
 ## SGLT2
 SGLT2_pvalues_adj_bmi_sex <- regression_analysis_function(
-  data = data, var_proteomics = variables_proteomics, drug = "SGLT2", adj_vars = c("prebmi", "sex")
+  data = data %>% filter(drugclass == "SGLT2"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("prebmi", "sex")
 )
 
 ## TZD
 TZD_pvalues_adj_bmi_sex <- regression_analysis_function(
-  data = data, var_proteomics = variables_proteomics, drug = "TZD", adj_vars = c("prebmi", "sex")
+  data = data %>% filter(drugclass == "TZD"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("prebmi", "sex")
 )
 
 
@@ -201,17 +147,17 @@ TZD_pvalues_adj_bmi_sex <- regression_analysis_function(
 
 ## DPP4
 DPP4_pvalues_adj_hba1c_bmi_sex <- regression_analysis_function(
-  data = data, var_proteomics = variables_proteomics, drug = "DPP4", adj_vars = c("prehba1c", "prebmi", "sex")
+  data = data %>% filter(drugclass == "DPP4"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("prehba1c", "prebmi", "sex")
 )
 
 ## SGLT2
 SGLT2_pvalues_adj_hba1c_bmi_sex <- regression_analysis_function(
-  data = data, var_proteomics = variables_proteomics, drug = "SGLT2", adj_vars = c("prehba1c", "prebmi", "sex")
+  data = data %>% filter(drugclass == "SGLT2"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("prehba1c", "prebmi", "sex")
 )
 
 ## TZD
 TZD_pvalues_adj_hba1c_bmi_sex <- regression_analysis_function(
-  data = data, var_proteomics = variables_proteomics, drug = "TZD", adj_vars = c("prehba1c", "prebmi", "sex")
+  data = data %>% filter(drugclass == "TZD"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("prehba1c", "prebmi", "sex")
 )
 
 
