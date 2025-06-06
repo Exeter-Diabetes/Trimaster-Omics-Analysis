@@ -5,7 +5,7 @@
 # https://doi.org/10.3390/rs16183379
 
 # load libraries
-options(java.parameters = "-Xmx2500m")
+options(java.parameters = "-Xmx4000m")
 library(bartMachine)
 library(Metrics)
 library(tidyverse)
@@ -1219,30 +1219,16 @@ saveRDS(BART_SGLT2_vs_TZD_proteomics_top_20_clinical_features_info, file = "Inte
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## Results summary ----
 
 # functions used
-rsq_summary_function <- function(data, comparison, variables) {
+rsq_summary_function <- function(data, comparison, models) {
   return(
     data %>% 
       select(rsq) %>%
       mutate(
         comparison = comparison,
-        variables = variables
+        models = models
       )
   )
 }
@@ -1266,9 +1252,16 @@ rsq_summary <- rsq_summary_function(BART_DPP4_vs_SGLT2_proteomics_info, "DPP4 vs
     rsq_summary_function(BART_DPP4_vs_TZD_proteomics_top_20_clinical_features_info, "DPP4 vs TZD", "Proteomics (Top 20) + Clinical features"),
     rsq_summary_function(BART_SGLT2_vs_TZD_proteomics_top_20_clinical_features_info, "SGLT2 vs TZD", "Proteomics (Top 20) + Clinical features")
   )
-  
-  
+
+
 plot_rsq_summary <- rsq_summary %>%
-  ggplot(aes(y = comparison, x = rsq, colour = variables)) +
-  geom_point(position = position_dodge(width = 0.5))
+  mutate(
+    models = factor(models, levels = rev(c("Clinical features", "Proteomics", "Proteomics (Top 20)", "Proteomics + Clinical features", "Proteomics (Top 20) + Clinical features")))
+  ) %>%
+  ggplot(aes(y = comparison, x = rsq, colour = models)) +
+  geom_point(position = position_dodge(width = 0.5)) +
+  labs(x = "R2", y = "Differential effects models") +
+  guides(color = guide_legend("Variable combinations", reverse = TRUE, ncol = 1)) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
 
