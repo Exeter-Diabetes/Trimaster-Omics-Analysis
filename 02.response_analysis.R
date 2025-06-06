@@ -51,114 +51,119 @@ TZD_pvalues_adj_hba1c <- regression_analysis_function(
 )
 
 
-### Sex ----
-
-## DPP4
-DPP4_pvalues_adj_sex <- regression_analysis_function(
-  data = data %>% filter(drugclass == "DPP4"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = "sex"
-)
-
-## SGLT2
-SGLT2_pvalues_adj_sex <- regression_analysis_function(
-  data = data %>% filter(drugclass == "SGLT2"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = "sex"
-)
-
-## TZD
-TZD_pvalues_adj_sex <- regression_analysis_function(
-  data = data %>% filter(drugclass == "TZD"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = "sex"
-)
-
-
-### BMI ----
-
-## DPP4
-DPP4_pvalues_adj_bmi <- regression_analysis_function(
-  data = data %>% filter(drugclass == "DPP4"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = "prebmi"
-)
-
-## SGLT2
-SGLT2_pvalues_adj_bmi <- regression_analysis_function(
-  data = data %>% filter(drugclass == "SGLT2"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = "prebmi"
-)
-
-## TZD
-TZD_pvalues_adj_bmi <- regression_analysis_function(
-  data = data %>% filter(drugclass == "TZD"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = "prebmi"
-)
-
-
-### HbA1c + BMI ----
-
-## DPP4
-DPP4_pvalues_adj_hba1c_bmi <- regression_analysis_function(
-  data = data %>% filter(drugclass == "DPP4"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("prehba1c", "prebmi")
-)
-
-## SGLT2
-SGLT2_pvalues_adj_hba1c_bmi <- regression_analysis_function(
-  data = data %>% filter(drugclass == "SGLT2"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("prehba1c", "prebmi")
-)
-
-## TZD
-TZD_pvalues_adj_hba1c_bmi <- regression_analysis_function(
-  data = data %>% filter(drugclass == "TZD"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("prehba1c", "prebmi")
-)
-
-
-
-### HbA1c + Sex ----
+### Sex (+ HbA1c) ----
 
 ## DPP4
 DPP4_pvalues_adj_hba1c_sex <- regression_analysis_function(
-  data = data %>% filter(drugclass == "DPP4"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("prehba1c", "sex")
+  data = data %>% filter(drugclass == "DPP4"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("sex", "prehba1c")
 )
 
 ## SGLT2
 SGLT2_pvalues_adj_hba1c_sex <- regression_analysis_function(
-  data = data %>% filter(drugclass == "SGLT2"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("prehba1c", "sex")
+  data = data %>% filter(drugclass == "SGLT2"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("sex", "prehba1c")
 )
 
 ## TZD
 TZD_pvalues_adj_hba1c_sex <- regression_analysis_function(
-  data = data %>% filter(drugclass == "TZD"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("prehba1c", "sex")
+  data = data %>% filter(drugclass == "TZD"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("sex", "prehba1c")
 )
 
 
-### BMI + Sex ----
+### BMI (+ HbA1c) ----
 
 ## DPP4
-DPP4_pvalues_adj_bmi_sex <- regression_analysis_function(
-  data = data %>% filter(drugclass == "DPP4"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("prebmi", "sex")
+DPP4_pvalues_adj_hba1c_bmi <- regression_analysis_function(
+  data = data %>% filter(drugclass == "DPP4"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("prebmi", "prehba1c")
 )
 
 ## SGLT2
-SGLT2_pvalues_adj_bmi_sex <- regression_analysis_function(
-  data = data %>% filter(drugclass == "SGLT2"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("prebmi", "sex")
+SGLT2_pvalues_adj_hba1c_bmi <- regression_analysis_function(
+  data = data %>% filter(drugclass == "SGLT2"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("prebmi", "prehba1c")
 )
 
 ## TZD
-TZD_pvalues_adj_bmi_sex <- regression_analysis_function(
-  data = data %>% filter(drugclass == "TZD"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("prebmi", "sex")
+TZD_pvalues_adj_hba1c_bmi <- regression_analysis_function(
+  data = data %>% filter(drugclass == "TZD"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("prebmi", "prehba1c")
 )
 
 
-
-### HbA1c + BMI + Sex ----
+### eGFR (+ HbA1c) ----
 
 ## DPP4
-DPP4_pvalues_adj_hba1c_bmi_sex <- regression_analysis_function(
-  data = data %>% filter(drugclass == "DPP4"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("prehba1c", "prebmi", "sex")
+DPP4_pvalues_adj_hba1c_egfr <- regression_analysis_function(
+  data = data %>% filter(drugclass == "DPP4"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("preegfr", "prehba1c")
 )
 
 ## SGLT2
-SGLT2_pvalues_adj_hba1c_bmi_sex <- regression_analysis_function(
-  data = data %>% filter(drugclass == "SGLT2"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("prehba1c", "prebmi", "sex")
+SGLT2_pvalues_adj_hba1c_egfr <- regression_analysis_function(
+  data = data %>% filter(drugclass == "SGLT2"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("preegfr", "prehba1c")
 )
 
 ## TZD
-TZD_pvalues_adj_hba1c_bmi_sex <- regression_analysis_function(
-  data = data %>% filter(drugclass == "TZD"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("prehba1c", "prebmi", "sex")
+TZD_pvalues_adj_hba1c_egfr <- regression_analysis_function(
+  data = data %>% filter(drugclass == "TZD"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("preegfr", "prehba1c")
 )
+
+
+
+
+### Age at treatment (+ HbA1c) ----
+
+## DPP4
+DPP4_pvalues_adj_hba1c_agetx <- regression_analysis_function(
+  data = data %>% filter(drugclass == "DPP4"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("agetx", "prehba1c")
+)
+
+## SGLT2
+SGLT2_pvalues_adj_hba1c_agetx <- regression_analysis_function(
+  data = data %>% filter(drugclass == "SGLT2"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("agetx", "prehba1c")
+)
+
+## TZD
+TZD_pvalues_adj_hba1c_agetx <- regression_analysis_function(
+  data = data %>% filter(drugclass == "TZD"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("agetx", "prehba1c")
+)
+
+
+
+
+### Duration (+ HbA1c) ----
+
+## DPP4
+DPP4_pvalues_adj_hba1c_t2dmduration <- regression_analysis_function(
+  data = data %>% filter(drugclass == "DPP4"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("t2dmduration", "prehba1c")
+)
+
+## SGLT2
+SGLT2_pvalues_adj_hba1c_t2dmduration <- regression_analysis_function(
+  data = data %>% filter(drugclass == "SGLT2"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("t2dmduration", "prehba1c")
+)
+
+## TZD
+TZD_pvalues_adj_hba1c_t2dmduration <- regression_analysis_function(
+  data = data %>% filter(drugclass == "TZD"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("t2dmduration", "prehba1c")
+)
+
+
+
+### HbA1c + BMI + Sex + eGFR + agetx + duration ----
+
+## DPP4
+DPP4_pvalues_adj <- regression_analysis_function(
+  data = data %>% filter(drugclass == "DPP4"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("prehba1c", "prebmi", "sex", "agetx", "preegfr", "t2dmduration")
+)
+
+## SGLT2
+SGLT2_pvalues_adj <- regression_analysis_function(
+  data = data %>% filter(drugclass == "SGLT2"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("prehba1c", "prebmi", "sex", "agetx", "preegfr", "t2dmduration")
+)
+
+## TZD
+TZD_pvalues_adj <- regression_analysis_function(
+  data = data %>% filter(drugclass == "TZD"), var_outcome = "resphba1c", var_proteomics = variables_proteomics, adj_vars = c("prehba1c", "prebmi", "sex", "agetx", "preegfr", "t2dmduration")
+)
+
+
 
 
 
@@ -172,18 +177,18 @@ plot_DPP4_pvalues <- DPP4_pvalues_univariate %>%
   rbind(
     DPP4_pvalues_adj_hba1c %>%
       mutate(facet_title = "Adjusted HbA1c"),
-    DPP4_pvalues_adj_sex %>%
-      mutate(facet_title = "Adjusted Sex"),
-    DPP4_pvalues_adj_bmi %>%
-      mutate(facet_title = "Adjusted BMI"),
-    DPP4_pvalues_adj_hba1c_bmi %>%
-      mutate(facet_title = "Adjusted HbA1c + BMI"),
     DPP4_pvalues_adj_hba1c_sex %>%
       mutate(facet_title = "Adjusted HbA1c + Sex"),
-    DPP4_pvalues_adj_bmi_sex %>%
-      mutate(facet_title = "Adjusted BMI + Sex"),
-    DPP4_pvalues_adj_hba1c_bmi_sex %>%
-      mutate(facet_title = "Adjusted HbA1c + BMI + Sex")
+    DPP4_pvalues_adj_hba1c_bmi %>%
+      mutate(facet_title = "Adjusted HbA1c + BMI"),
+    DPP4_pvalues_adj_hba1c_egfr %>%
+      mutate(facet_title = "Adjusted HbA1c + eGFR"),
+    DPP4_pvalues_adj_hba1c_agetx %>%
+      mutate(facet_title = "Adjusted HbA1c + Age at treatment"),
+    DPP4_pvalues_adj_hba1c_t2dmduration %>%
+      mutate(facet_title = "Adjusted HbA1c + Duration"),
+    DPP4_pvalues_adj %>%
+      mutate(facet_title = "Adjusted")
   ) %>%
   mutate(
     proteomic_yaxis = ifelse(p_value <= 0.05, gsub("proteomics_", "", proteomic), NA),
@@ -195,7 +200,7 @@ plot_DPP4_pvalues <- DPP4_pvalues_univariate %>%
   gather("key", "value", -c("proteomic", "coef", "p_value", "p_value_adj_bonf", "p_value_adj_FDR", "proteomic_yaxis", "facet_title")) %>%
   mutate(
     key = factor(key, levels = c("pvalue_fill", "pvalue_FDR_fill", "pvalue_bonf_fill"), labels = c("Unadjusted", "FDR", "Bonferroni")),
-    facet_title = factor(facet_title, levels = c("Unadjusted", "Adjusted HbA1c", "Adjusted Sex", "Adjusted BMI", "Adjusted HbA1c + BMI", "Adjusted HbA1c + Sex", "Adjusted BMI + Sex", "Adjusted HbA1c + BMI + Sex"))
+    facet_title = factor(facet_title, levels = c("Unadjusted", "Adjusted HbA1c", "Adjusted HbA1c + Sex", "Adjusted HbA1c + BMI", "Adjusted HbA1c + eGFR", "Adjusted HbA1c + Age at treatment", "Adjusted HbA1c + Duration", "Adjusted"))
   ) %>%
   ggplot(aes(x = key, y = proteomic_yaxis, fill = value)) +
   geom_tile() +
@@ -214,18 +219,18 @@ plot_DPP4_coef <- DPP4_pvalues_univariate %>%
   rbind(
     DPP4_pvalues_adj_hba1c %>%
       mutate(facet_title = "Adjusted HbA1c"),
-    DPP4_pvalues_adj_sex %>%
-      mutate(facet_title = "Adjusted Sex"),
-    DPP4_pvalues_adj_bmi %>%
-      mutate(facet_title = "Adjusted BMI"),
-    DPP4_pvalues_adj_hba1c_bmi %>%
-      mutate(facet_title = "Adjusted HbA1c + BMI"),
     DPP4_pvalues_adj_hba1c_sex %>%
       mutate(facet_title = "Adjusted HbA1c + Sex"),
-    DPP4_pvalues_adj_bmi_sex %>%
-      mutate(facet_title = "Adjusted BMI + Sex"),
-    DPP4_pvalues_adj_hba1c_bmi_sex %>%
-      mutate(facet_title = "Adjusted HbA1c + BMI + Sex")
+    DPP4_pvalues_adj_hba1c_bmi %>%
+      mutate(facet_title = "Adjusted HbA1c + BMI"),
+    DPP4_pvalues_adj_hba1c_egfr %>%
+      mutate(facet_title = "Adjusted HbA1c + eGFR"),
+    DPP4_pvalues_adj_hba1c_agetx %>%
+      mutate(facet_title = "Adjusted HbA1c + Age at treatment"),
+    DPP4_pvalues_adj_hba1c_t2dmduration %>%
+      mutate(facet_title = "Adjusted HbA1c + Duration"),
+    DPP4_pvalues_adj %>%
+      mutate(facet_title = "Adjusted")
   ) %>%
   mutate(
     proteomic_yaxis = ifelse(p_value <= 0.05, gsub("proteomics_", "", proteomic), NA),
@@ -233,7 +238,7 @@ plot_DPP4_coef <- DPP4_pvalues_univariate %>%
   ) %>%
   drop_na(proteomic_yaxis) %>%
   mutate(
-    facet_title = factor(facet_title, levels = c("Unadjusted", "Adjusted HbA1c", "Adjusted Sex", "Adjusted BMI", "Adjusted HbA1c + BMI", "Adjusted HbA1c + Sex", "Adjusted BMI + Sex", "Adjusted HbA1c + BMI + Sex"))
+    facet_title = factor(facet_title, levels = c("Unadjusted", "Adjusted HbA1c", "Adjusted HbA1c + Sex", "Adjusted HbA1c + BMI", "Adjusted HbA1c + eGFR", "Adjusted HbA1c + Age at treatment", "Adjusted HbA1c + Duration", "Adjusted"))
   ) %>%
   ggplot(aes(x = xaxis, y = proteomic_yaxis, fill = coef)) +
   geom_tile() +
@@ -255,18 +260,18 @@ plot_SGLT2_pvalues <- SGLT2_pvalues_univariate %>%
   rbind(
     SGLT2_pvalues_adj_hba1c %>%
       mutate(facet_title = "Adjusted HbA1c"),
-    SGLT2_pvalues_adj_sex %>%
-      mutate(facet_title = "Adjusted Sex"),
-    SGLT2_pvalues_adj_bmi %>%
-      mutate(facet_title = "Adjusted BMI"),
-    SGLT2_pvalues_adj_hba1c_bmi %>%
-      mutate(facet_title = "Adjusted HbA1c + BMI"),
     SGLT2_pvalues_adj_hba1c_sex %>%
       mutate(facet_title = "Adjusted HbA1c + Sex"),
-    SGLT2_pvalues_adj_bmi_sex %>%
-      mutate(facet_title = "Adjusted BMI + Sex"),
-    SGLT2_pvalues_adj_hba1c_bmi_sex %>%
-      mutate(facet_title = "Adjusted HbA1c + BMI + Sex")
+    SGLT2_pvalues_adj_hba1c_bmi %>%
+      mutate(facet_title = "Adjusted HbA1c + BMI"),
+    SGLT2_pvalues_adj_hba1c_egfr %>%
+      mutate(facet_title = "Adjusted HbA1c + eGFR"),
+    SGLT2_pvalues_adj_hba1c_agetx %>%
+      mutate(facet_title = "Adjusted HbA1c + Age at treatment"),
+    SGLT2_pvalues_adj_hba1c_t2dmduration %>%
+      mutate(facet_title = "Adjusted HbA1c + Duration"),
+    SGLT2_pvalues_adj %>%
+      mutate(facet_title = "Adjusted")
   ) %>%
   mutate(
     proteomic_yaxis = ifelse(p_value <= 0.05, gsub("proteomics_", "", proteomic), NA),
@@ -278,7 +283,7 @@ plot_SGLT2_pvalues <- SGLT2_pvalues_univariate %>%
   gather("key", "value", -c("proteomic", "coef", "p_value", "p_value_adj_bonf", "p_value_adj_FDR", "proteomic_yaxis", "facet_title")) %>%
   mutate(
     key = factor(key, levels = c("pvalue_fill", "pvalue_FDR_fill", "pvalue_bonf_fill"), labels = c("Unadjusted", "FDR", "Bonferroni")),
-    facet_title = factor(facet_title, levels = c("Unadjusted", "Adjusted HbA1c", "Adjusted Sex", "Adjusted BMI", "Adjusted HbA1c + BMI", "Adjusted HbA1c + Sex", "Adjusted BMI + Sex", "Adjusted HbA1c + BMI + Sex"))
+    facet_title = factor(facet_title, levels = c("Unadjusted", "Adjusted HbA1c", "Adjusted HbA1c + Sex", "Adjusted HbA1c + BMI", "Adjusted HbA1c + eGFR", "Adjusted HbA1c + Age at treatment", "Adjusted HbA1c + Duration", "Adjusted"))
   ) %>%
   ggplot(aes(x = key, y = proteomic_yaxis, fill = value)) +
   geom_tile() +
@@ -297,18 +302,18 @@ plot_SGLT2_coef <- SGLT2_pvalues_univariate %>%
   rbind(
     SGLT2_pvalues_adj_hba1c %>%
       mutate(facet_title = "Adjusted HbA1c"),
-    SGLT2_pvalues_adj_sex %>%
-      mutate(facet_title = "Adjusted Sex"),
-    SGLT2_pvalues_adj_bmi %>%
-      mutate(facet_title = "Adjusted BMI"),
-    SGLT2_pvalues_adj_hba1c_bmi %>%
-      mutate(facet_title = "Adjusted HbA1c + BMI"),
     SGLT2_pvalues_adj_hba1c_sex %>%
       mutate(facet_title = "Adjusted HbA1c + Sex"),
-    SGLT2_pvalues_adj_bmi_sex %>%
-      mutate(facet_title = "Adjusted BMI + Sex"),
-    SGLT2_pvalues_adj_hba1c_bmi_sex %>%
-      mutate(facet_title = "Adjusted HbA1c + BMI + Sex")
+    SGLT2_pvalues_adj_hba1c_bmi %>%
+      mutate(facet_title = "Adjusted HbA1c + BMI"),
+    SGLT2_pvalues_adj_hba1c_egfr %>%
+      mutate(facet_title = "Adjusted HbA1c + eGFR"),
+    SGLT2_pvalues_adj_hba1c_agetx %>%
+      mutate(facet_title = "Adjusted HbA1c + Age at treatment"),
+    SGLT2_pvalues_adj_hba1c_t2dmduration %>%
+      mutate(facet_title = "Adjusted HbA1c + Duration"),
+    SGLT2_pvalues_adj %>%
+      mutate(facet_title = "Adjusted")
   ) %>%
   mutate(
     proteomic_yaxis = ifelse(p_value <= 0.05, gsub("proteomics_", "", proteomic), NA),
@@ -316,7 +321,7 @@ plot_SGLT2_coef <- SGLT2_pvalues_univariate %>%
   ) %>%
   drop_na(proteomic_yaxis) %>%
   mutate(
-    facet_title = factor(facet_title, levels = c("Unadjusted", "Adjusted HbA1c", "Adjusted Sex", "Adjusted BMI", "Adjusted HbA1c + BMI", "Adjusted HbA1c + Sex", "Adjusted BMI + Sex", "Adjusted HbA1c + BMI + Sex"))
+    facet_title = factor(facet_title, levels = c("Unadjusted", "Adjusted HbA1c", "Adjusted HbA1c + Sex", "Adjusted HbA1c + BMI", "Adjusted HbA1c + eGFR", "Adjusted HbA1c + Age at treatment", "Adjusted HbA1c + Duration", "Adjusted"))
   ) %>%
   ggplot(aes(x = xaxis, y = proteomic_yaxis, fill = coef)) +
   geom_tile() +
@@ -338,18 +343,18 @@ plot_TZD_pvalues <- TZD_pvalues_univariate %>%
   rbind(
     TZD_pvalues_adj_hba1c %>%
       mutate(facet_title = "Adjusted HbA1c"),
-    TZD_pvalues_adj_sex %>%
-      mutate(facet_title = "Adjusted Sex"),
-    TZD_pvalues_adj_bmi %>%
-      mutate(facet_title = "Adjusted BMI"),
-    TZD_pvalues_adj_hba1c_bmi %>%
-      mutate(facet_title = "Adjusted HbA1c + BMI"),
     TZD_pvalues_adj_hba1c_sex %>%
       mutate(facet_title = "Adjusted HbA1c + Sex"),
-    TZD_pvalues_adj_bmi_sex %>%
-      mutate(facet_title = "Adjusted BMI + Sex"),
-    TZD_pvalues_adj_hba1c_bmi_sex %>%
-      mutate(facet_title = "Adjusted HbA1c + BMI + Sex")
+    TZD_pvalues_adj_hba1c_bmi %>%
+      mutate(facet_title = "Adjusted HbA1c + BMI"),
+    TZD_pvalues_adj_hba1c_egfr %>%
+      mutate(facet_title = "Adjusted HbA1c + eGFR"),
+    TZD_pvalues_adj_hba1c_agetx %>%
+      mutate(facet_title = "Adjusted HbA1c + Age at treatment"),
+    TZD_pvalues_adj_hba1c_t2dmduration %>%
+      mutate(facet_title = "Adjusted HbA1c + Duration"),
+    TZD_pvalues_adj %>%
+      mutate(facet_title = "Adjusted")
   ) %>%
   mutate(
     proteomic_yaxis = ifelse(p_value <= 0.05, gsub("proteomics_", "", proteomic), NA),
@@ -361,7 +366,7 @@ plot_TZD_pvalues <- TZD_pvalues_univariate %>%
   gather("key", "value", -c("proteomic", "coef", "p_value", "p_value_adj_bonf", "p_value_adj_FDR", "proteomic_yaxis", "facet_title")) %>%
   mutate(
     key = factor(key, levels = c("pvalue_fill", "pvalue_FDR_fill", "pvalue_bonf_fill"), labels = c("Unadjusted", "FDR", "Bonferroni")),
-    facet_title = factor(facet_title, levels = c("Unadjusted", "Adjusted HbA1c", "Adjusted Sex", "Adjusted BMI", "Adjusted HbA1c + BMI", "Adjusted HbA1c + Sex", "Adjusted BMI + Sex", "Adjusted HbA1c + BMI + Sex"))
+    facet_title = factor(facet_title, levels = c("Unadjusted", "Adjusted HbA1c", "Adjusted HbA1c + Sex", "Adjusted HbA1c + BMI", "Adjusted HbA1c + eGFR", "Adjusted HbA1c + Age at treatment", "Adjusted HbA1c + Duration", "Adjusted"))
   ) %>%
   ggplot(aes(x = key, y = proteomic_yaxis, fill = value)) +
   geom_tile() +
@@ -380,18 +385,18 @@ plot_TZD_coef <- TZD_pvalues_univariate %>%
   rbind(
     TZD_pvalues_adj_hba1c %>%
       mutate(facet_title = "Adjusted HbA1c"),
-    TZD_pvalues_adj_sex %>%
-      mutate(facet_title = "Adjusted Sex"),
-    TZD_pvalues_adj_bmi %>%
-      mutate(facet_title = "Adjusted BMI"),
-    TZD_pvalues_adj_hba1c_bmi %>%
-      mutate(facet_title = "Adjusted HbA1c + BMI"),
     TZD_pvalues_adj_hba1c_sex %>%
       mutate(facet_title = "Adjusted HbA1c + Sex"),
-    TZD_pvalues_adj_bmi_sex %>%
-      mutate(facet_title = "Adjusted BMI + Sex"),
-    TZD_pvalues_adj_hba1c_bmi_sex %>%
-      mutate(facet_title = "Adjusted HbA1c + BMI + Sex")
+    TZD_pvalues_adj_hba1c_bmi %>%
+      mutate(facet_title = "Adjusted HbA1c + BMI"),
+    TZD_pvalues_adj_hba1c_egfr %>%
+      mutate(facet_title = "Adjusted HbA1c + eGFR"),
+    TZD_pvalues_adj_hba1c_agetx %>%
+      mutate(facet_title = "Adjusted HbA1c + Age at treatment"),
+    TZD_pvalues_adj_hba1c_t2dmduration %>%
+      mutate(facet_title = "Adjusted HbA1c + Duration"),
+    TZD_pvalues_adj %>%
+      mutate(facet_title = "Adjusted")
   ) %>%
   mutate(
     proteomic_yaxis = ifelse(p_value <= 0.05, gsub("proteomics_", "", proteomic), NA),
@@ -399,7 +404,7 @@ plot_TZD_coef <- TZD_pvalues_univariate %>%
   ) %>%
   drop_na(proteomic_yaxis) %>%
   mutate(
-    facet_title = factor(facet_title, levels = c("Unadjusted", "Adjusted HbA1c", "Adjusted Sex", "Adjusted BMI", "Adjusted HbA1c + BMI", "Adjusted HbA1c + Sex", "Adjusted BMI + Sex", "Adjusted HbA1c + BMI + Sex"))
+    facet_title = factor(facet_title, levels = c("Unadjusted", "Adjusted HbA1c", "Adjusted HbA1c + Sex", "Adjusted HbA1c + BMI", "Adjusted HbA1c + eGFR", "Adjusted HbA1c + Age at treatment", "Adjusted HbA1c + Duration", "Adjusted"))
   ) %>%
   ggplot(aes(x = xaxis, y = proteomic_yaxis, fill = coef)) +
   geom_tile() +
