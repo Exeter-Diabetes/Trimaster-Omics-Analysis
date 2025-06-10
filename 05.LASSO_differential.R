@@ -391,7 +391,6 @@ y = data %>%
   unlist()
 
 
-
 # CV for alpha
 LASSO_DPP4_vs_SGLT2_proteomics_clinical_features_cv_model <- cv.glmnet(X, y, alpha = 1, nfolds = 5)
 
@@ -633,9 +632,20 @@ plot_rsq_summary <- rsq_summary %>%
   geom_point(position = position_dodge(width = 0.5)) +
   labs(x = "R2", y = "Differential effects models") +
   guides(color = guide_legend("Variable combinations", reverse = TRUE, ncol = 1)) +
-  theme_minimal() +
-  theme(legend.position = "bottom")
+  theme_classic() +
+  facet_wrap(~ comparison, ncol = 1, scales = "free_y") +
+  theme(
+    legend.position = "bottom",
+    panel.grid.major.x = element_line(),
+    panel.grid.minor.x = element_line(),
+    axis.text = element_text(size = 14),
+    axis.title = element_text(size = 16),
+    legend.text = element_text(size = 12)
+  )
 
+pdf("Plots/05.LASSO_R2.pdf", width = 7, height = 6)
+plot_rsq_summary
+dev.off()
 
 
 
