@@ -10,6 +10,13 @@ library(bartMachine)
 library(Metrics)
 library(tidyverse)
 
+# load nonlinvarsel
+# install.packages('foreach', dep = T)
+# url <- 'http://www.rob-mcculloch.org/chm/nonlinvarsel_0.0.1.9001.tar.gz'
+# download.file(url, destfile = 'temp')
+# install.packages('temp', repos = NULL, type='source')
+library(nonlinvarsel)
+
 # load functions
 source("00.functions.R")
 source("01.cohort_definition.R")
@@ -93,6 +100,36 @@ if (file.exists("Interim_files/BART_DPP4_vs_SGLT2_proteomics_cv_model_var_import
 # variable importance top 20
 BART_DPP4_vs_SGLT2_proteomics_cv_model_var_importance_top_20 <- setdiff(names(BART_DPP4_vs_SGLT2_proteomics_cv_model_var_importance$avg_var_props), "prehba1c")[1:20]
 
+# variable selection nonlinvarsel (takes a bit of time)
+if (file.exists("Interim_files/BART_DPP4_vs_SGLT2_proteomics_cv_model_nonlinvarsel.rds")) {
+  # load file
+  BART_DPP4_vs_SGLT2_proteomics_cv_model_nonlinvarsel <- readRDS("Interim_files/BART_DPP4_vs_SGLT2_proteomics_cv_model_nonlinvarsel.rds")
+} else {
+  # run analysis
+  BART_DPP4_vs_SGLT2_proteomics_cv_model_nonlinvarsel_foward <- vsf(X, BART_DPP4_vs_SGLT2_proteomics_cv_model$y_hat_train)
+  BART_DPP4_vs_SGLT2_proteomics_cv_model_nonlinvarsel_backward <- vsb(X, BART_DPP4_vs_SGLT2_proteomics_cv_model$y_hat_train)
+  
+  # combine together
+  BART_DPP4_vs_SGLT2_proteomics_cv_model_nonlinvarsel <- print(BART_DPP4_vs_SGLT2_proteomics_cv_model_nonlinvarsel_foward) %>%
+    as.data.frame() %>%
+    set_names(c("Forward")) %>%
+    rownames_to_column() %>%
+    left_join(
+      print(BART_DPP4_vs_SGLT2_proteomics_cv_model_nonlinvarsel_backward) %>%
+        as.data.frame() %>%
+        set_names(c("Backward")) %>%
+        rownames_to_column()
+    ) %>%
+    arrange(Forward) %>%
+    mutate(Foward_pos = 1:n()) %>%
+    arrange(Backward) %>%
+    mutate(Backward_pos = 1:n()) %>%
+    mutate(Average_pos = (Foward_pos + Backward_pos) / 2) %>%
+    arrange(Average_pos)
+  
+  saveRDS(BART_DPP4_vs_SGLT2_proteomics_cv_model_nonlinvarsel, file = "Interim_files/BART_DPP4_vs_SGLT2_proteomics_cv_model_nonlinvarsel.rds")
+}
+
 
 # variable selection
 if (file.exists("Interim_files/BART_DPP4_vs_SGLT2_proteomics_cv_model_var_select.rds")) {
@@ -172,6 +209,36 @@ if (file.exists("Interim_files/BART_DPP4_vs_TZD_proteomics_cv_model_var_importan
 # variable importance top 20
 BART_DPP4_vs_TZD_proteomics_cv_model_var_importance_top_20 <- setdiff(names(BART_DPP4_vs_TZD_proteomics_cv_model_var_importance$avg_var_props), "prehba1c")[1:20]
 
+# variable selection nonlinvarsel (takes a bit of time)
+if (file.exists("Interim_files/BART_DPP4_vs_TZD_proteomics_cv_model_nonlinvarsel.rds")) {
+  # load file
+  BART_DPP4_vs_TZD_proteomics_cv_model_nonlinvarsel <- readRDS("Interim_files/BART_DPP4_vs_TZD_proteomics_cv_model_nonlinvarsel.rds")
+} else {
+  # run analysis
+  BART_DPP4_vs_TZD_proteomics_cv_model_nonlinvarsel_foward <- vsf(X, BART_DPP4_vs_TZD_proteomics_cv_model$y_hat_train)
+  BART_DPP4_vs_TZD_proteomics_cv_model_nonlinvarsel_backward <- vsb(X, BART_DPP4_vs_TZD_proteomics_cv_model$y_hat_train)
+  
+  # combine together
+  BART_DPP4_vs_TZD_proteomics_cv_model_nonlinvarsel <- print(BART_DPP4_vs_TZD_proteomics_cv_model_nonlinvarsel_foward) %>%
+    as.data.frame() %>%
+    set_names(c("Forward")) %>%
+    rownames_to_column() %>%
+    left_join(
+      print(BART_DPP4_vs_TZD_proteomics_cv_model_nonlinvarsel_backward) %>%
+        as.data.frame() %>%
+        set_names(c("Backward")) %>%
+        rownames_to_column()
+    ) %>%
+    arrange(Forward) %>%
+    mutate(Foward_pos = 1:n()) %>%
+    arrange(Backward) %>%
+    mutate(Backward_pos = 1:n()) %>%
+    mutate(Average_pos = (Foward_pos + Backward_pos) / 2) %>%
+    arrange(Average_pos)
+  
+  saveRDS(BART_DPP4_vs_TZD_proteomics_cv_model_nonlinvarsel, file = "Interim_files/BART_DPP4_vs_TZD_proteomics_cv_model_nonlinvarsel.rds")
+}
+
 # variable selection
 if (file.exists("Interim_files/BART_DPP4_vs_TZD_proteomics_cv_model_var_select.rds")) {
   # load file
@@ -249,6 +316,36 @@ if (file.exists("Interim_files/BART_SGLT2_vs_TZD_proteomics_cv_model_var_importa
 
 # variable importance top 20
 BART_SGLT2_vs_TZD_proteomics_cv_model_var_importance_top_20 <- setdiff(names(BART_SGLT2_vs_TZD_proteomics_cv_model_var_importance$avg_var_props), "prehba1c")[1:20]
+
+# variable selection nonlinvarsel (takes a bit of time)
+if (file.exists("Interim_files/BART_SGLT2_vs_TZD_proteomics_cv_model_nonlinvarsel.rds")) {
+  # load file
+  BART_SGLT2_vs_TZD_proteomics_cv_model_nonlinvarsel <- readRDS("Interim_files/BART_SGLT2_vs_TZD_proteomics_cv_model_nonlinvarsel.rds")
+} else {
+  # run analysis
+  BART_SGLT2_vs_TZD_proteomics_cv_model_nonlinvarsel_foward <- vsf(X, BART_SGLT2_vs_TZD_proteomics_cv_model$y_hat_train)
+  BART_SGLT2_vs_TZD_proteomics_cv_model_nonlinvarsel_backward <- vsb(X, BART_SGLT2_vs_TZD_proteomics_cv_model$y_hat_train)
+  
+  # combine together
+  BART_SGLT2_vs_TZD_proteomics_cv_model_nonlinvarsel <- print(BART_SGLT2_vs_TZD_proteomics_cv_model_nonlinvarsel_foward) %>%
+    as.data.frame() %>%
+    set_names(c("Forward")) %>%
+    rownames_to_column() %>%
+    left_join(
+      print(BART_SGLT2_vs_TZD_proteomics_cv_model_nonlinvarsel_backward) %>%
+        as.data.frame() %>%
+        set_names(c("Backward")) %>%
+        rownames_to_column()
+    ) %>%
+    arrange(Forward) %>%
+    mutate(Foward_pos = 1:n()) %>%
+    arrange(Backward) %>%
+    mutate(Backward_pos = 1:n()) %>%
+    mutate(Average_pos = (Foward_pos + Backward_pos) / 2) %>%
+    arrange(Average_pos)
+  
+  saveRDS(BART_SGLT2_vs_TZD_proteomics_cv_model_nonlinvarsel, file = "Interim_files/BART_SGLT2_vs_TZD_proteomics_cv_model_nonlinvarsel.rds")
+}
 
 # variable selection
 if (file.exists("Interim_files/BART_SGLT2_vs_TZD_proteomics_cv_model_var_select.rds")) {
@@ -802,6 +899,36 @@ if (file.exists("Interim_files/BART_DPP4_vs_SGLT2_proteomics_clinical_features_c
   saveRDS(BART_DPP4_vs_SGLT2_proteomics_clinical_features_cv_model_var_importance, file = "Interim_files/BART_DPP4_vs_SGLT2_proteomics_clinical_features_cv_model_var_importance.rds")
 }
 
+# variable selection nonlinvarsel (takes a bit of time)
+if (file.exists("Interim_files/BART_DPP4_vs_SGLT2_proteomics_clinical_features_cv_model_nonlinvarsel.rds")) {
+  # load file
+  BART_DPP4_vs_SGLT2_proteomics_clinical_features_cv_model_nonlinvarsel <- readRDS("Interim_files/BART_DPP4_vs_SGLT2_proteomics_clinical_features_cv_model_nonlinvarsel.rds")
+} else {
+  # run analysis
+  BART_DPP4_vs_SGLT2_proteomics_clinical_features_cv_model_nonlinvarsel_foward <- vsf(X, BART_DPP4_vs_SGLT2_proteomics_clinical_features_cv_model$y_hat_train)
+  BART_DPP4_vs_SGLT2_proteomics_clinical_features_cv_model_nonlinvarsel_backward <- vsb(X, BART_DPP4_vs_SGLT2_proteomics_clinical_features_cv_model$y_hat_train)
+  
+  # combine together
+  BART_DPP4_vs_SGLT2_proteomics_clinical_features_cv_model_nonlinvarsel <- print(BART_DPP4_vs_SGLT2_proteomics_clinical_features_cv_model_nonlinvarsel_foward) %>%
+    as.data.frame() %>%
+    set_names(c("Forward")) %>%
+    rownames_to_column() %>%
+    left_join(
+      print(BART_DPP4_vs_SGLT2_proteomics_clinical_features_cv_model_nonlinvarsel_backward) %>%
+        as.data.frame() %>%
+        set_names(c("Backward")) %>%
+        rownames_to_column()
+    ) %>%
+    arrange(Forward) %>%
+    mutate(Foward_pos = 1:n()) %>%
+    arrange(Backward) %>%
+    mutate(Backward_pos = 1:n()) %>%
+    mutate(Average_pos = (Foward_pos + Backward_pos) / 2) %>%
+    arrange(Average_pos)
+  
+  saveRDS(BART_DPP4_vs_SGLT2_proteomics_clinical_features_cv_model_nonlinvarsel, file = "Interim_files/BART_DPP4_vs_SGLT2_proteomics_clinical_features_cv_model_nonlinvarsel.rds")
+}
+
 # variable selection
 if (file.exists("Interim_files/BART_DPP4_vs_SGLT2_proteomics_clinical_features_cv_model_var_select.rds")) {
   # load file
@@ -877,6 +1004,36 @@ if (file.exists("Interim_files/BART_DPP4_vs_TZD_proteomics_clinical_features_cv_
   saveRDS(BART_DPP4_vs_TZD_proteomics_clinical_features_cv_model_var_importance, file = "Interim_files/BART_DPP4_vs_TZD_proteomics_clinical_features_cv_model_var_importance.rds")
 }
 
+# variable selection nonlinvarsel (takes a bit of time)
+if (file.exists("Interim_files/BART_DPP4_vs_TZD_proteomics_clinical_features_cv_model_nonlinvarsel.rds")) {
+  # load file
+  BART_DPP4_vs_TZD_proteomics_clinical_features_cv_model_nonlinvarsel <- readRDS("Interim_files/BART_DPP4_vs_TZD_proteomics_clinical_features_cv_model_nonlinvarsel.rds")
+} else {
+  # run analysis
+  BART_DPP4_vs_TZD_proteomics_clinical_features_cv_model_nonlinvarsel_foward <- vsf(X, BART_DPP4_vs_TZD_proteomics_clinical_features_cv_model$y_hat_train)
+  BART_DPP4_vs_TZD_proteomics_clinical_features_cv_model_nonlinvarsel_backward <- vsb(X, BART_DPP4_vs_TZD_proteomics_clinical_features_cv_model$y_hat_train)
+  
+  # combine together
+  BART_DPP4_vs_TZD_proteomics_clinical_features_cv_model_nonlinvarsel <- print(BART_DPP4_vs_TZD_proteomics_clinical_features_cv_model_nonlinvarsel_foward) %>%
+    as.data.frame() %>%
+    set_names(c("Forward")) %>%
+    rownames_to_column() %>%
+    left_join(
+      print(BART_DPP4_vs_TZD_proteomics_clinical_features_cv_model_nonlinvarsel_backward) %>%
+        as.data.frame() %>%
+        set_names(c("Backward")) %>%
+        rownames_to_column()
+    ) %>%
+    arrange(Forward) %>%
+    mutate(Foward_pos = 1:n()) %>%
+    arrange(Backward) %>%
+    mutate(Backward_pos = 1:n()) %>%
+    mutate(Average_pos = (Foward_pos + Backward_pos) / 2) %>%
+    arrange(Average_pos)
+  
+  saveRDS(BART_DPP4_vs_TZD_proteomics_clinical_features_cv_model_nonlinvarsel, file = "Interim_files/BART_DPP4_vs_TZD_proteomics_clinical_features_cv_model_nonlinvarsel.rds")
+}
+
 # variable selection
 if (file.exists("Interim_files/BART_DPP4_vs_TZD_proteomics_clinical_features_cv_model_var_select.rds")) {
   # load file
@@ -950,6 +1107,36 @@ if (file.exists("Interim_files/BART_SGLT2_vs_TZD_proteomics_clinical_features_cv
   BART_SGLT2_vs_TZD_proteomics_clinical_features_cv_model_var_importance <- investigate_var_importance(BART_SGLT2_vs_TZD_proteomics_clinical_features_cv_model)
   
   saveRDS(BART_SGLT2_vs_TZD_proteomics_clinical_features_cv_model_var_importance, file = "Interim_files/BART_SGLT2_vs_TZD_proteomics_clinical_features_cv_model_var_importance.rds")
+}
+
+# variable selection nonlinvarsel (takes a bit of time)
+if (file.exists("Interim_files/BART_SGLT2_vs_TZD_proteomics_clinical_features_cv_model_nonlinvarsel.rds")) {
+  # load file
+  BART_SGLT2_vs_TZD_proteomics_clinical_features_cv_model_nonlinvarsel <- readRDS("Interim_files/BART_SGLT2_vs_TZD_proteomics_clinical_features_cv_model_nonlinvarsel.rds")
+} else {
+  # run analysis
+  BART_SGLT2_vs_TZD_proteomics_clinical_features_cv_model_nonlinvarsel_foward <- vsf(X, BART_SGLT2_vs_TZD_proteomics_clinical_features_cv_model$y_hat_train)
+  BART_SGLT2_vs_TZD_proteomics_clinical_features_cv_model_nonlinvarsel_backward <- vsb(X, BART_SGLT2_vs_TZD_proteomics_clinical_features_cv_model$y_hat_train)
+  
+  # combine together
+  BART_SGLT2_vs_TZD_proteomics_clinical_features_cv_model_nonlinvarsel <- print(BART_SGLT2_vs_TZD_proteomics_clinical_features_cv_model_nonlinvarsel_foward) %>%
+    as.data.frame() %>%
+    set_names(c("Forward")) %>%
+    rownames_to_column() %>%
+    left_join(
+      print(BART_SGLT2_vs_TZD_proteomics_clinical_features_cv_model_nonlinvarsel_backward) %>%
+        as.data.frame() %>%
+        set_names(c("Backward")) %>%
+        rownames_to_column()
+    ) %>%
+    arrange(Forward) %>%
+    mutate(Foward_pos = 1:n()) %>%
+    arrange(Backward) %>%
+    mutate(Backward_pos = 1:n()) %>%
+    mutate(Average_pos = (Foward_pos + Backward_pos) / 2) %>%
+    arrange(Average_pos)
+  
+  saveRDS(BART_SGLT2_vs_TZD_proteomics_clinical_features_cv_model_nonlinvarsel, file = "Interim_files/BART_SGLT2_vs_TZD_proteomics_clinical_features_cv_model_nonlinvarsel.rds")
 }
 
 # variable selection
@@ -1264,4 +1451,29 @@ plot_rsq_summary <- rsq_summary %>%
   guides(color = guide_legend("Variable combinations", reverse = TRUE, ncol = 1)) +
   theme_minimal() +
   theme(legend.position = "bottom")
+
+
+
+plot_rsq_summary <- rsq_summary %>%
+  mutate(
+    models = factor(models, levels = rev(c("Clinical features", "Proteomics", "Proteomics (Top 20)", "Proteomics + Clinical features", "Proteomics (Top 20) + Clinical features")))
+  ) %>%
+  ggplot(aes(y = comparison, x = rsq, colour = models)) +
+  geom_point(position = position_dodge(width = 0.5)) +
+  labs(x = "R2", y = "Differential effects models") +
+  guides(color = guide_legend("Variable combinations", reverse = TRUE, ncol = 1)) +
+  theme_classic() +
+  facet_wrap(~ comparison, ncol = 1, scales = "free_y") +
+  theme(
+    legend.position = "bottom",
+    panel.grid.major.x = element_line(),
+    panel.grid.minor.x = element_line(),
+    axis.text = element_text(size = 14),
+    axis.title = element_text(size = 16),
+    legend.text = element_text(size = 12)
+  )
+
+pdf("Plots/04.BART_R2.pdf", width = 7, height = 6)
+plot_rsq_summary
+dev.off()
 
