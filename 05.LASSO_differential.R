@@ -19,6 +19,10 @@ variables_proteomics <- data %>% select(contains("proteom")) %>% colnames()
 # clinical features
 clinical_features <- c("prebmi", "sex", "agetx", "preegfr", "t2dmduration")
 
+
+data <- data %>%
+  mutate_at(c(variables_proteomics, "prebmi", "agetx", "preegfr", "t2dmduration", "prehba1c"), function(x) scale(x))
+
 # LASSO differential response analysis ----
 
 ## Order of analysis ----
