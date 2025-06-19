@@ -471,16 +471,125 @@ plot_SGLT2_TZD_coef
 dev.off()
 
 
+# Proteomics summary ----
+human_protein_atlas <- read.delim("Proteomics Descriptions/human_protein_atlas.tsv")
+unitprotkb_function <- readxl::read_excel("Proteomics Descriptions/uniprotkb_function.xlsx")
 
-# # something
-# SGLT2_TZD_pvalues_univariate %>% slice(1:3)
-# SGLT2_TZD_pvalues_adj_hba1c %>% slice(1:3)
-# # FABP4: Fatty acid-binding protein, adipocyte
-# # LEP: Leptin (protein hormone produced by fat cells)
+proteomics_summary_DPP4_SGLT2 <- DPP4_SGLT2_pvalues_adj %>%
+  filter(p_value < 0.05) %>%
+  mutate(
+    drug1 = "DPP4",
+    drug2 = "SGLT2"
+  ) %>%
+  mutate(
+    benefit = ifelse(coef <= 0, drug1, drug2),
+    proteomic = toupper(gsub("proteomics_", "", proteomic))
+  ) %>%
+  select(-c(p_value_adj_bonf, p_value_adj_FDR, drug1, drug2)) %>%
+  relocate(benefit, .after = proteomic) %>%
+  rename(Names = proteomic) %>%
+  left_join(
+    human_protein_atlas %>%
+      rename("Names" = "Gene", "Gene description" = "Gene.description"), by = c("Names")
+  ) %>%
+  relocate("Gene description", .after = "Names") %>%
+  left_join(
+    unitprotkb_function %>%
+      rename("Uniprot" = "Entry") %>%
+      select(-c(`Gene Names`, `Entry Name`, `Protein names`)), by = c("Uniprot")
+  ) %>%
+  select(-c(`Uniprot`))
+
+proteomics_summary_DPP4_TZD <- DPP4_TZD_pvalues_adj %>%
+  filter(p_value < 0.05) %>%
+  mutate(
+    drug1 = "DPP4",
+    drug2 = "TZD"
+  ) %>%
+  mutate(
+    benefit = ifelse(coef <= 0, drug1, drug2),
+    proteomic = toupper(gsub("proteomics_", "", proteomic))
+  ) %>%
+  select(-c(p_value_adj_bonf, p_value_adj_FDR, drug1, drug2)) %>%
+  relocate(benefit, .after = proteomic) %>%
+  rename(Names = proteomic) %>%
+  left_join(
+    human_protein_atlas %>%
+      rename("Names" = "Gene", "Gene description" = "Gene.description"), by = c("Names")
+  ) %>%
+  relocate("Gene description", .after = "Names") %>%
+  left_join(
+    unitprotkb_function %>%
+      rename("Uniprot" = "Entry") %>%
+      select(-c(`Gene Names`, `Entry Name`, `Protein names`)), by = c("Uniprot")
+  ) %>%
+  select(-c(`Uniprot`))
+
+
+proteomics_summary_SGLT2_TZD <- SGLT2_TZD_pvalues_adj %>%
+  filter(p_value < 0.05) %>%
+  mutate(
+    drug1 = "SGLT2",
+    drug2 = "TZD"
+  ) %>%
+  mutate(
+    benefit = ifelse(coef <= 0, drug1, drug2),
+    proteomic = toupper(gsub("proteomics_", "", proteomic))
+  ) %>%
+  select(-c(p_value_adj_bonf, p_value_adj_FDR, drug1, drug2)) %>%
+  relocate(benefit, .after = proteomic) %>%
+  rename(Names = proteomic) %>%
+  left_join(
+    human_protein_atlas %>%
+      rename("Names" = "Gene", "Gene description" = "Gene.description"), by = c("Names")
+  ) %>%
+  relocate("Gene description", .after = "Names") %>%
+  left_join(
+    unitprotkb_function %>%
+      rename("Uniprot" = "Entry") %>%
+      select(-c(`Gene Names`, `Entry Name`, `Protein names`)), by = c("Uniprot")
+  ) %>%
+  select(-c(`Uniprot`))
 
 
 
+correlation_plot <- data %>% select(all_of(paste0("proteomics_", tolower(proteomics_summary$Names)))) %>%
+  rename_with(~ toupper(str_remove(.x, "^proteomics_"))) %>%
+  drop_na() %>%
+  cor() %>%
+  corrplot::corrplot(method = 'color', order = "hclust")
 
 
+proteomics_summary <- proteomics_summary_SGLT2_TZD %>%
+  select(Names, benefit) %>%
+  mutate(comparison = "SGLT2 vs TZD") %>%
+  rbind(
+    proteomics_summary_DPP4_TZD %>%
+      select(Names, benefit) %>%
+      mutate(comparison = "DPP4 vs TZD"),
+    proteomics_summary_DPP4_SGLT2 %>%
+      select(Names, benefit) %>%
+      mutate(comparison = "DPP4 vs SGLT2")
+  ) %>%
+  pivot_wider(names_from = comparison, values_from = benefit, values_fill = NA) %>%
+  left_join(
+    human_protein_atlas %>%
+      rename("Names" = "Gene", "Gene description" = "Gene.description"), by = c("Names")
+  ) %>%
+  relocate("Gene description", .after = "Names") %>%
+  left_join(
+    unitprotkb_function %>%
+      rename("Uniprot" = "Entry") %>%
+      select(-c(`Gene Names`, `Entry Name`, `Protein names`)), by = c("Uniprot")
+  ) %>%
+  select(-c(`Uniprot`)) %>%
+  mutate(Names = factor(Names, levels = unique(correlation_plot$corrPos$xName))) %>%
+  arrange(Names)
+
+interim <- proteomics_summary %>%
+  left_join(univariate_analysis_proteomics %>% select(Names, `Function (simple)`)) %>%
+  mutate(Names = factor(Names, levels = unique(correlation_plot$corrPos$xName))) %>%
+  arrange(Names) %>%
+  relocate(`Function (simple)`, .before = `Function [CC]`)
 
 
