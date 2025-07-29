@@ -18,7 +18,7 @@ regression_analysis_function <- function(data, var_outcome = NULL, var_proteomic
   interim_dataset <- NULL
   
   # iterate by each var_proteomics
-  for (protein in variables_proteomics) {
+  for (protein in var_proteomics) {
     
     # formula for iterations (adj_vars only added when not null because of paste)
     formula <- paste(paste(var_outcome, "~"), paste(c(protein, adj_vars), collapse = "+"))
