@@ -1,4 +1,3 @@
-
 # Initial setup ----
 
 # load functions
@@ -12,11 +11,8 @@ load("Data/pca_variable.Rdata") # pca_variable
 
 # proteomics variables
 variables_proteomics <- data %>% select(contains("proteom")) %>% colnames()
-clinical_features <- c("prehba1c", "prebmi", "sex", "agetx", "preegfr", "t2dmduration")
+clinical_features <- c("prehba1c")
 pc_features <- paste0("PC", 1:10)
-
-
-
 
 # Proteomics summary
 human_protein_atlas <- read.delim("Proteomics Descriptions/human_protein_atlas.tsv")
@@ -31,33 +27,28 @@ library(glmnet)
 data_analysis <- data %>%
   # select only clinical features and outcomes
   select(all_of(c("study_id", clinical_features, "resphba1c_SGLT2", "resphba1c_TZD"))) %>%
-  mutate(benefit = resphba1c_SGLT2 - resphba1c_TZD, 
-         prehba1c = scale(prehba1c), 
-         prebmi = scale(prebmi), 
-         agetx = scale(agetx), 
-         preegfr = scale(preegfr), 
-         t2dmduration = scale(t2dmduration)) %>%
+  mutate(benefit = resphba1c_SGLT2 - resphba1c_TZD,
+        prehba1c = scale(prehba1c)) %>%
   select(-c("resphba1c_SGLT2", "resphba1c_TZD")) %>%
   # join PCA to main dataset
   left_join(
-    pca_individuals, by = c("study_id")
+    pca_individuals, by = c("study_id"),
   ) %>%
   # drop missing data
   drop_na()
 
+
+
+
 data_proteomics <- data %>%
   # select only clinical features and outcomes
   select(all_of(c("study_id", clinical_features, variables_proteomics, "resphba1c_SGLT2", "resphba1c_TZD"))) %>%
-  mutate(benefit = resphba1c_SGLT2 - resphba1c_TZD,
-         prehba1c = scale(prehba1c), 
-         prebmi = scale(prebmi), 
-         agetx = scale(agetx), 
-         preegfr = scale(preegfr), 
-         t2dmduration = scale(t2dmduration)) %>%
+  mutate(benefit = resphba1c_SGLT2 - resphba1c_TZD, 
+         prehba1c = scale(prehba1c)) %>%
   select(-c("resphba1c_SGLT2", "resphba1c_TZD")) %>%
   # drop missing data
   drop_na()
-  
+
 
 # Regression analysis ----
 
@@ -87,12 +78,9 @@ summary(SGLT2_TZD_lm)
 # Plot results
 plot_forest(SGLT2_TZD_lm, 
             title = "SGLT2 vs TZD (Differential Response)", 
-            #save_path = "Plots/SGLT2_v_TZD_differential_response.png",
+            save_path = "Plots/SGLT2_v_TZD_differential_response_unadjusted.png",
             width = 10, height = 5.5)
 
-
-
-# Checking PCs identified ----
 
 ## PC 4, 7 and 8 identified
 pc_identified <- NULL
@@ -108,22 +96,25 @@ PC4_adj <- regression_analysis_function(
   data = data_proteomics,
   var_outcome = "benefit", 
   var_proteomics = names(pc_identified[["PC4"]]), 
-  adj_vars = c("prehba1c", "prebmi", "sex", "agetx", "preegfr", "t2dmduration")
+  adj_vars = c("prehba1c")
 )
+
 
 PC7_adj <- regression_analysis_function(
   data = data_proteomics,
   var_outcome = "benefit", 
   var_proteomics = names(pc_identified[["PC7"]]), 
-  adj_vars = c("prehba1c", "prebmi", "sex", "agetx", "preegfr", "t2dmduration")
+  adj_vars = c("prehba1c")
 )
 
 PC8_adj <- regression_analysis_function(
   data = data_proteomics,
   var_outcome = "benefit", 
   var_proteomics = names(pc_identified[["PC8"]]), 
-  adj_vars = c("prehba1c", "prebmi", "sex", "agetx", "preegfr", "t2dmduration")
+  adj_vars = c("prehba1c")
 )
+
+
 
 
 output_proteomics <- rbind(
@@ -205,6 +196,8 @@ output_proteomics <- rbind(
 )
 
 
+
+
 # Individual drug response ---------
 
 
@@ -220,11 +213,7 @@ data_SGLT2 <- data %>%
   drop_na() %>%
   mutate(
     resp = resphba1c_SGLT2,
-    prehba1c = scale(prehba1c), 
-    prebmi = scale(prebmi), 
-    agetx = scale(agetx), 
-    preegfr = scale(preegfr), 
-    t2dmduration = scale(t2dmduration)
+    prehba1c = scale(prehba1c)
   )
 
 
@@ -250,11 +239,7 @@ data_TZD <- data %>%
   drop_na() %>%
   mutate(
     resp = resphba1c_TZD, 
-    prehba1c = scale(prehba1c), 
-    prebmi = scale(prebmi), 
-    agetx = scale(agetx), 
-    preegfr = scale(preegfr), 
-    t2dmduration = scale(t2dmduration)
+    prehba1c = scale(prehba1c)
   )
 
 
@@ -270,7 +255,7 @@ results_protein_TZD <- run_top_protein_regressions(
 
 # Summarise response data
 summary_sglt2_tzd <- generate_pc_summary_tables(
-  output_proteomics = output_proteomics,
+  output_proteomics = output_proteomics %>% filter(p_value < 0.05),
   results_drug1 = results_protein_SGLT2,
   results_drug2 = results_protein_TZD,
   drug1_label = "SGLT2",
@@ -281,8 +266,10 @@ summary_sglt2_tzd <- generate_pc_summary_tables(
 # Save summary tables
 for (pc in names(summary_sglt2_tzd)) {
   write.csv(summary_sglt2_tzd[[pc]],
-            file = paste0("Output/summary_table_SGLT2_v_TZD_", pc, ".csv"),
+            file = paste0("Output/summary_table_SGLT2_v_TZD_unadjusted_", pc, ".csv"),
             row.names = FALSE)
 }
+
+
 
 

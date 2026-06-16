@@ -34,13 +34,18 @@ pca_analysis <- FactoMineR::PCA(
   X = data_analysis %>%
     select(-c("study_id")),
   scale.unit = FALSE, # already done
-  ncp = 10 # this does not affect pca, affects the components given 
+  ncp = 20 # this does not affect pca, affects the components given 
 )
 
 
 ## Explained variance ----
 # Variance explained by different components
-plot_varexplained <- factoextra::fviz_eig(pca_analysis, addlabels = TRUE, ncp = 10)
+plot_varexplained <- factoextra::fviz_eig(pca_analysis, 
+                                          addlabels = TRUE, 
+                                          ncp = 10) +
+  theme_minimal(base_size = 20)
+
+
 
 # Attribute importance for specific components (in this case 1 and 2)
 plot_attributeimp <- factoextra::fviz_pca_var(
@@ -64,7 +69,7 @@ plot_cos2imp <- factoextra::fviz_cos2(
 ## Patient values ----
 pca_individuals <- factoextra::get_pca_ind(pca_analysis)$coord %>%
   as.data.frame() %>%
-  set_names(paste0("PC", 1:10)) %>% # change column names
+  set_names(paste0("PC", 1:20)) %>% # change column names
   cbind(
     study_id = data_analysis$study_id # add study id column
   ) %>%
